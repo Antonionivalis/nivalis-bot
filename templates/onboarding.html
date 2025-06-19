@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivalis - Business Profile Setup</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e1b3c 0%, #2d2654 30%, #3a316b 70%, #4a3a82 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #22d3ee 0%, #06b6d4 25%, #0891b2 50%, #f97316 75%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #22d3ee 0%, #06b6d4 25%, #0891b2 50%, #f97316 75%, #ea580c 100%);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+        
+        .question-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .question-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .option-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00d4ff;
+        }
+        
+        .option-button.selected {
+            background: linear-gradient(45deg, #00d4ff, #ff7b00);
+            border-color: transparent;
+        }
+        
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .checkbox-option.selected {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+        }
+        
+        .checkbox-option input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: #00d4ff;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4ff, #ff7b00);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .completion-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .completion-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+        
+        .completion-text {
+            color: #a0a0a0;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #a0a0a0;
+            margin: 20px 0;
+        }
+        
+        .error {
+            display: none;
+            color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">NIVALIS</div>
+            <div class="subtitle">Business Intelligence Profile</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 of 12</div>
+        </div>
+        
+        <div id="questionContainer">
+            <!-- Questions will be loaded here -->
+        </div>
+        
+        <div class="loading" id="loading">Loading next question...</div>
+        <div class="error" id="error">Something went wrong. Please try again.</div>
+        
+        <div id="completionScreen" style="display: none;">
+            <div class="completion-message">
+                <div class="completion-title">✓ Intelligence Gathered</div>
+                <div class="completion-text">
+                    Your profile is locked and loaded. I've analyzed your situation, skills, and objectives. 
+                    Time to get to work. Return to the bot for your first mission briefing.
+                </div>
+                <button class="btn btn-primary" onclick="completeOnboarding()">
+                    Begin Operations
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+        
+        let currentQuestion = null;
+        let currentAnswer = null;
+        let selectedOptions = [];
+        
+        // Load first question
+        loadNextQuestion();
+        
+        function loadNextQuestion() {
+            showLoading(true);
+            hideError();
+            
+            fetch('/onboarding/next-question')
+                .then(response => response.json())
+                .then(data => {
+                    showLoading(false);
+                    
+                    if (data.success) {
+                        if (data.completed) {
+                            showCompletionScreen();
+                        } else {
+                            displayQuestion(data.question, data.progress);
+                        }
+                    } else {
+                        showError('Failed to load question');
+                    }
+                })
+                .catch(error => {
+                    console.error('Load question error:', error);
+                    showLoading(false);
+                    showError('Failed to load question');
+                });
+        }
+        
+        function displayQuestion(question, progress) {
+            currentQuestion = question;
+            currentAnswer = null;
+            selectedOptions = [];
+            
+            // Update progress
+            const progressPercent = (progress.current / progress.total) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('progressText').textContent = `Question ${progress.current} of ${progress.total}`;
+            
+            // Build question HTML
+            let html = `
+                <div class="question-card">
+                    <div class="question-title">${question.question}</div>
+            `;
+            
+            if (question.type === 'text' || question.type === 'email') {
+                html += `
+                    <input type="${question.type === 'email' ? 'email' : 'text'}" 
+                           class="answer-input" 
+                           id="textAnswer" 
+                           placeholder="Your answer..."
+                           oninput="setTextAnswer(this.value)"
+                           onchange="setTextAnswer(this.value)"
+                           onkeyup="setTextAnswer(this.value)">
+                `;
+            } else if (question.type === 'choice') {
+                question.options.forEach((option, index) => {
+                    html += `
+                        <button class="option-button" onclick="selectOption('${option}')">
+                            ${option}
+                        </button>
+                    `;
+                });
+            } else if (question.type === 'multiple_choice') {
+                question.options.forEach((option, index) => {
+                    html += `
+                        <div class="checkbox-option" onclick="toggleOption('${option}')">
+                            <input type="checkbox" id="option_${index}" onchange="toggleOption('${option}')">
+                            <label for="option_${index}">${option}</label>
+                        </div>
+                    `;
+                });
+                
+                // Add text input for "Other" option if it exists
+                if (question.options.includes('Other')) {
+                    html += `
+                        <div style="margin-top: 15px; display: none;" id="otherTextContainer">
+                            <input type="text" 
+                                   class="answer-input" 
+                                   id="otherText" 
+                                   placeholder="Please specify..."
+                                   oninput="handleOtherText(this.value)"
+                                   style="margin-top: 10px;">
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="submitAnswer()" id="submitBtn" disabled>
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('questionContainer').innerHTML = html;
+        }
+        
+        function setTextAnswer(value) {
+            currentAnswer = value.trim();
+            updateSubmitButton();
+        }
+        
+        function selectOption(option) {
+            currentAnswer = option;
+            
+            // Update UI
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent.trim() === option) {
+                    btn.classList.add('selected');
+                }
+            });
+            
+            updateSubmitButton();
+        }
+        
+        function toggleOption(option) {
+            const index = selectedOptions.indexOf(option);
+            if (index > -1) {
+                selectedOptions.splice(index, 1);
+            } else {
+                selectedOptions.push(option);
+            }
+            
+            // Show/hide "Other" text input
+            if (option === 'Other') {
+                const otherContainer = document.getElementById('otherTextContainer');
+                if (otherContainer) {
+                    if (selectedOptions.includes('Other')) {
+                        otherContainer.style.display = 'block';
+                    } else {
+                        otherContainer.style.display = 'none';
+                        document.getElementById('otherText').value = '';
+                    }
+                }
+            }
+            
+            currentAnswer = selectedOptions.length > 0 ? selectedOptions : null;
+            
+            // Update UI
+            document.querySelectorAll('.checkbox-option').forEach(div => {
+                const isSelected = selectedOptions.includes(option) && div.textContent.trim().includes(option);
+                div.classList.toggle('selected', isSelected);
+            });
+            
+            updateSubmitButton();
+        }
+        
+        function handleOtherText(value) {
+            // Store the "Other" specification
+            window.otherSpecification = value.trim();
+            updateSubmitButton();
+        }
+        
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            let hasAnswer = false;
+            
+            if (currentAnswer !== null && currentAnswer !== undefined) {
+                if (typeof currentAnswer === 'string') {
+                    hasAnswer = currentAnswer.trim().length > 0;
+                } else if (Array.isArray(currentAnswer)) {
+                    hasAnswer = currentAnswer.length > 0;
+                } else {
+                    hasAnswer = true; // For boolean or other valid values
+                }
+            }
+            
+            submitBtn.disabled = !hasAnswer;
+            submitBtn.style.opacity = hasAnswer ? '1' : '0.5';
+        }
+        
+        function submitAnswer() {
+            console.log('Submit clicked, currentAnswer:', currentAnswer);
+            console.log('Current question:', currentQuestion);
+            
+            if (!currentAnswer || currentAnswer === null || currentAnswer === undefined) {
+                console.log('No answer provided');
+                showError('Please provide an answer before continuing');
+                return;
+            }
+            
+            // Handle "Other" specification for skills question
+            let finalAnswer = currentAnswer;
+            if (currentQuestion.id === 'skills_expertise' && selectedOptions.includes('Other') && window.otherSpecification) {
+                // Replace "Other" with the specific text
+                finalAnswer = selectedOptions.map(option => 
+                    option === 'Other' ? `Other: ${window.otherSpecification}` : option
+                );
+            }
+            
+            showLoading(true);
+            hideError();
+            
+            fetch('/onboarding/submit-answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    question_id: currentQuestion.id,
+                    answer: finalAnswer
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Submit response:', data);
+                showLoading(false);
+                
+                if (data.success) {
+                    if (data.completed) {
+                        showCompletionScreen();
+                    } else {
+                        loadNextQuestion();
+                    }
+                } else {
+                    showError(data.error || 'Failed to submit answer');
+                }
+            })
+            .catch(error => {
+                console.error('Submit answer error:', error);
+                showLoading(false);
+                showError('Failed to submit answer');
+            });
+        }
+        
+        function showCompletionScreen() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('completionScreen').style.display = 'block';
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = 'Profile Complete!';
+        }
+        
+        function completeOnboarding() {
+            // Close the WebApp and return to bot
+            window.Telegram.WebApp.close();
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function showError(message) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

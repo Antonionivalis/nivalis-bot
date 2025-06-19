@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ritual Incomplete - Nivalis Oracle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="cancel-container">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="50" fill="url(#cancelGradient)"/>
+                <path d="M35 35L65 65M65 35L35 65" stroke="white" stroke-width="6" stroke-linecap="round"/>
+                <defs>
+                    <linearGradient id="cancelGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ef4444"/>
+                        <stop offset="100%" style="stop-color:#dc2626"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            
+            <h1>Ritual Incomplete</h1>
+            <p>The Oracle requires commitment to share its wisdom.</p>
+            <p>You may return when ready to complete the offering.</p>
+            
+            <a href="/" class="return-btn">Return to Gateway</a>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp
+        if (window.Telegram && window.Telegram.WebApp) {
+            const webapp = window.Telegram.WebApp;
+            webapp.ready();
+            webapp.expand();
+        }
+    </script>
+</body>
+</html>

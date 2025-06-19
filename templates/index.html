@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivalis AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1 class="gradient-title">NIVALIS</h1>
+            </div>
+            <div class="auth-section" id="authSection">
+                <button class="login-btn" id="loginBtn" onclick="showLoginModal()">Login</button>
+            </div>
+        </header>
+
+        <main class="main">
+            <section class="hero">
+                <h2 class="headline">Built on 10 years of Experience and Results.<br>Trained for One Purpose: Execution.</h2>
+
+                
+                <div class="subscription-card">
+                    <h3>Nivalis AI Access</h3>
+                    <div class="features">
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Transform any skill into high-ticket monthly offers</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Viral content scripts from top performing creators</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Complete marketing funnels that convert prospects into clients</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Client acquisition systems for consistent lead generation</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Premium positioning strategies for maximum pricing power</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Always-on business strategist that never sleeps</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-section" style="text-align: center; margin: 20px 0;">
+                        <div class="pricing">
+                            <span class="price">£49</span>
+                            <span class="period">per month</span>
+                        </div>
+                        <div class="coming-soon-notice" style="padding: 15px; background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 8px; margin-top: 15px;">
+                            <p style="color: #22d3ee; font-weight: 600; margin: 0; font-size: 0.9rem;">Dropping Soon - Join the waitlist below for early access</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mvp-tier">
+                <div class="mvp-card">
+                    <div class="mvp-header">
+                        <h3>Founder's Access</h3>
+                        <div class="badge urgent">10 Spots Only</div>
+                    </div>
+                    <p class="mvp-description">One-time payment. Lifetime access. Never pay again.</p>
+                    
+                    <div class="mvp-features">
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Lifetime access to Nivalis AI (no monthly fees ever)</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Early influence on future features</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Invite to private rollout discussions inside the founders community</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>1-1 Strategy call with Antonio</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Exclusive upgrade pricing when the full Nivalis Order community opens</span>
+                        </div>
+                    </div>
+                    
+
+                    
+                    <form method="POST" action="/create-mvp-checkout-session" id="mvpForm">
+                        <input type="hidden" name="user_id" id="mvpUserId" value="">
+                        <button type="submit" class="subscribe-btn mvp">
+                            Secure Lifetime Access — £97
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="coming-soon">
+                <div class="coming-soon-card">
+                    <div class="coming-soon-header">
+                        <h3>The Nivalis Order</h3>
+                        <div class="badge coming-soon-badge">Coming Soon</div>
+                    </div>
+                    <p class="coming-soon-description">The ultimate strategic mastery community for serious entrepreneurs.</p>
+                    
+                    <div class="coming-soon-features">
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <span>Direct access to Antonio for strategy calls</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <span>Private mastermind community</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <span>Advanced AI models and features</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <span>Monthly group strategy sessions</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <span>Expected: £497/month</span>
+                        </div>
+                    </div>
+                    
+                    <form class="notify-form" id="notifyForm">
+                        <input type="text" name="name" placeholder="Your name" required class="notify-input">
+                        <input type="email" name="email" placeholder="Your email" required class="notify-input">
+                        <button type="submit" class="notify-btn">
+                            Notify Me When Available
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>"The secret to getting ahead is getting started." - Mark Twain</p>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Login to Your Account</h3>
+                <span class="close" onclick="closeLoginModal()">&times;</span>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe" name="remember_me">
+                        <span class="checkmark"></span>
+                        Stay logged in
+                    </label>
+                </div>
+                <button type="button" class="login-submit-btn" onclick="handleLoginClick()">Login</button>
+                <div class="login-links">
+                    <a href="#" onclick="showSignupForm()">Don't have an account? Sign up</a>
+                </div>
+            </form>
+            
+            <form id="signupForm" class="signup-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" name="password" required>
+                </div>
+                <button type="submit" class="login-submit-btn">Create Account</button>
+                <div class="login-links">
+                    <a href="#" onclick="showLoginForm()">Already have an account? Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Dashboard -->
+    <div id="userDashboard" class="dashboard" style="display: none;">
+        <div class="dashboard-header">
+            <div class="dashboard-logo">
+                <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="30" cy="30" r="30" fill="url(#gradient)"/>
+                    <path d="M20 30L26 24L34 32L40 26" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1a1a2e"/>
+                            <stop offset="100%" style="stop-color:#16213e"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h2>NIVALIS DASHBOARD</h2>
+            </div>
+            <div class="user-info">
+                <span id="userName">Welcome back</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="dashboard-nav">
+                <button class="nav-item active" onclick="showSection('overview')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                    </svg>
+                    Overview
+                </button>
+                <button class="nav-item" onclick="showSection('profile')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Profile
+                </button>
+                <button class="nav-item" onclick="showSection('templates')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                    </svg>
+                    Templates
+                </button>
+                <button class="nav-item" onclick="showSection('subscription')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6"></path>
+                        <path d="m15.4 6.4-4.8 4.8m0 0 4.8 4.8M8.6 6.4l4.8 4.8"></path>
+                    </svg>
+                    Subscription
+                </button>
+                <button class="nav-item" onclick="showSection('help')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
+                    Help
+                </button>
+            </div>
+
+            <div class="dashboard-main">
+                <div id="overviewSection" class="dashboard-section active">
+                    <h3>Mission Overview</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-content">
+                                <h4>Active Strategies</h4>
+                                <p id="activeStrategies">-</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-content">
+                                <h4>Revenue Potential</h4>
+                                <p id="revenuePotential">-</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-content">
+                                <h4>Execution Score</h4>
+                                <p id="executionScore">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="quick-actions">
+                        <h4>Quick Actions</h4>
+                        <button class="action-btn" onclick="openBot()">Launch Bot Session</button>
+                        <button class="action-btn" onclick="showSection('templates')">Browse Templates</button>
+                        <button class="action-btn" onclick="showSection('profile')">Update Profile</button>
+                    </div>
+                </div>
+
+                <div id="profileSection" class="dashboard-section">
+                    <h3>User Profile</h3>
+                    <div id="profileData" class="profile-data">
+                        <div class="loading">Loading profile data...</div>
+                    </div>
+                </div>
+
+                <div id="templatesSection" class="dashboard-section">
+                    <h3>Strategic Templates</h3>
+                    <div class="templates-grid">
+                        <div class="template-card" onclick="useTemplate('offer')">
+                            <h4>High-Ticket Offer Builder</h4>
+                            <p>Create offers for [SKILL] targeting [CLIENT TYPE] with [BUDGET] budgets</p>
+                            <div class="template-tag">Offer Creation</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('content')">
+                            <h4>Viral Video Script</h4>
+                            <p>Write viral content about [TOPIC] for [NICHE] audience</p>
+                            <div class="template-tag">Content</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('calendar')">
+                            <h4>Content Calendar</h4>
+                            <p>30-day content plan for [BUSINESS TYPE] focusing on [BENEFIT]</p>
+                            <div class="template-tag">Planning</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('acquisition')">
+                            <h4>Client Acquisition System</h4>
+                            <p>Design client acquisition for [SERVICE] with [TIME] per week</p>
+                            <div class="template-tag">Sales</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="subscriptionSection" class="dashboard-section">
+                    <h3>Subscription Status</h3>
+                    <div id="subscriptionData" class="subscription-data">
+                        <div class="loading">Loading subscription data...</div>
+                    </div>
+                </div>
+
+                <div id="helpSection" class="dashboard-section">
+                    <h3>Command Center Help</h3>
+                    <div class="help-content">
+                        <div class="help-section">
+                            <h4>Bot Commands</h4>
+                            <div class="command-list">
+                                <div class="command">/start - Main welcome and setup</div>
+                                <div class="command">/profile - View your profile data</div>
+                                <div class="command">/help - Show capabilities</div>
+                                <div class="command">/miniapp - Access this dashboard</div>
+                            </div>
+                        </div>
+                        <div class="help-section">
+                            <h4>Strategic Capabilities</h4>
+                            <ul>
+                                <li>High-ticket offer development</li>
+                                <li>Viral content and marketing strategies</li>
+                                <li>Business operations and scaling</li>
+                                <li>Revenue optimization systems</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let telegramUser = null;
+        
+        // Initialize Telegram WebApp
+        if (window.Telegram && window.Telegram.WebApp) {
+            const webapp = window.Telegram.WebApp;
+            webapp.ready();
+            
+
+            
+            // Get user data
+            telegramUser = webapp.initDataUnsafe.user;
+            if (telegramUser && telegramUser.id) {
+                document.getElementById('basicUserId').value = telegramUser.id;
+                document.getElementById('mvpUserId').value = telegramUser.id;
+            }
+            
+            // Expand the WebApp
+            webapp.expand();
+            
+            // Set theme
+            document.body.style.backgroundColor = webapp.backgroundColor || '#0a0a0a';
+        }
+        
+
+
+        // Check for existing login on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkExistingLogin();
+            updateAuthButton();
+            
+            // Manual testing - remove auto-login
+            console.log('Page loaded. Authentication system ready for manual testing.');
+        });
+        
+        // Enhanced session persistence for Telegram WebApp
+        function storeUserSession(token, user) {
+            // Store in multiple locations for persistence
+            localStorage.setItem('nivalis_token', token);
+            localStorage.setItem('nivalis_user', JSON.stringify(user));
+            
+            // Also store in sessionStorage as backup
+            sessionStorage.setItem('nivalis_token', token);
+            sessionStorage.setItem('nivalis_user', JSON.stringify(user));
+            
+            // Store timestamp for session validation
+            const sessionData = {
+                token: token,
+                user: user,
+                timestamp: Date.now(),
+                telegram_id: user.telegram_id
+            };
+            localStorage.setItem('nivalis_session', JSON.stringify(sessionData));
+        }
+        
+        function getUserSession() {
+            // Try localStorage first
+            let token = localStorage.getItem('nivalis_token');
+            let userData = localStorage.getItem('nivalis_user');
+            
+            // Fallback to sessionStorage
+            if (!token || !userData) {
+                token = sessionStorage.getItem('nivalis_token');
+                userData = sessionStorage.getItem('nivalis_user');
+                
+                // If found in sessionStorage, restore to localStorage
+                if (token && userData) {
+                    localStorage.setItem('nivalis_token', token);
+                    localStorage.setItem('nivalis_user', userData);
+                }
+            }
+            
+            // Check session data for additional validation
+            const sessionData = localStorage.getItem('nivalis_session');
+            if (sessionData && (!token || !userData)) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    // Use session data if recent (within 24 hours)
+                    if (Date.now() - session.timestamp < 24 * 60 * 60 * 1000) {
+                        token = session.token;
+                        userData = JSON.stringify(session.user);
+                        // Restore to both storages
+                        storeUserSession(session.token, session.user);
+                    }
+                } catch (e) {
+                    console.error('Error parsing session data:', e);
+                }
+            }
+            
+            return { token, userData };
+        }
+        
+        // Authentication functions
+        function checkExistingLogin() {
+            const { token, userData } = getUserSession();
+            
+            console.log('Checking existing login...', { token: !!token, userData: !!userData });
+            
+            if (token && userData) {
+                try {
+                    currentUser = JSON.parse(userData);
+                    console.log('Found existing user:', currentUser);
+                    showDashboard();
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                    clearUserSession();
+                }
+            } else {
+                console.log('No existing login found');
+            }
+        }
+        
+        function clearUserSession() {
+            localStorage.removeItem('nivalis_token');
+            localStorage.removeItem('nivalis_user');
+            localStorage.removeItem('nivalis_session');
+            sessionStorage.removeItem('nivalis_token');
+            sessionStorage.removeItem('nivalis_user');
+        }
+        
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+        
+        function showSignupForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        }
+        
+        function showLoginForm() {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+        
+        // Handle login button click
+        function handleLoginClick() {
+            console.log('Login button clicked');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            const loginData = {
+                email: email,
+                password: password,
+                remember_me: rememberMe
+            };
+            
+            console.log('Login data:', loginData);
+            
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(result => {
+                console.log('Login result:', result);
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    storeUserSession(result.token, result.user);
+                    closeLoginModal();
+                    showDashboard();
+                } else {
+                    alert(result.message || 'Login failed');
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                alert('Login error. Please try again.');
+            });
+        }
+        
+        // Handle login form submission
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            console.log('Login form submitted');
+            
+            const formData = new FormData(e.target);
+            const loginData = {
+                email: formData.get('email'),
+                password: formData.get('password'),
+                remember_me: formData.get('remember_me') === 'on'
+            };
+            
+            console.log('Login data:', loginData);
+            
+            try {
+                console.log('Sending login request...');
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+                
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Login result:', result);
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    localStorage.setItem('nivalis_token', result.token);
+                    localStorage.setItem('nivalis_user', JSON.stringify(result.user));
+                    closeLoginModal();
+                    showDashboard();
+                } else {
+                    alert(result.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login error. Please try again.');
+            }
+        }
+        
+        // Handle signup form submission
+        async function handleSignupSubmit(e) {
+            e.preventDefault();
+            console.log('Signup form submitted');
+            
+            const formData = new FormData(e.target);
+            const signupData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                telegram_id: telegramUser ? telegramUser.id : null
+            };
+            
+            console.log('Signup data:', signupData);
+            
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(signupData)
+                });
+                
+                const result = await response.json();
+                console.log('Signup result:', result);
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    storeUserSession(result.token, result.user);
+                    closeLoginModal();
+                    showDashboard();
+                } else {
+                    alert(result.message || 'Signup failed');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                alert('Signup error. Please try again.');
+            }
+        }
+        
+        function showDashboard() {
+            console.log('showDashboard called, currentUser:', currentUser);
+            
+            const container = document.querySelector('.container');
+            const dashboard = document.getElementById('userDashboard');
+            const userName = document.getElementById('userName');
+            
+            console.log('Container element:', container);
+            console.log('Dashboard element:', dashboard);
+            console.log('UserName element:', userName);
+            
+            if (container) {
+                container.style.display = 'none';
+                console.log('Container hidden');
+            }
+            
+            if (dashboard) {
+                dashboard.style.display = 'block';
+                dashboard.style.visibility = 'visible';
+                dashboard.style.opacity = '1';
+                dashboard.style.zIndex = '9999';
+                console.log('Dashboard shown with forced styles');
+            } else {
+                console.error('Dashboard element not found!');
+                alert('Dashboard element not found - showing in current view');
+                return;
+            }
+            
+            if (userName && currentUser) {
+                userName.textContent = `Welcome back, ${currentUser.name}`;
+                console.log('User name set');
+            }
+            
+            loadDashboardData();
+            console.log('Dashboard data loading...');
+        }
+        
+        function hideDashboard() {
+            document.querySelector('.container').style.display = 'block';
+            document.getElementById('userDashboard').style.display = 'none';
+            updateAuthButton();
+        }
+        
+        function updateAuthButton() {
+            const authSection = document.getElementById('authSection');
+            if (currentUser) {
+                authSection.innerHTML = `
+                    <div class="user-menu">
+                        <span class="user-name">${currentUser.name}</span>
+                        <button class="dashboard-btn" onclick="showDashboard()">Dashboard</button>
+                        <button class="logout-btn-header" onclick="logout()">Logout</button>
+                    </div>
+                `;
+            } else {
+                authSection.innerHTML = '<button class="login-btn" onclick="showLoginModal()">Login</button>';
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('nivalis_token');
+            localStorage.removeItem('nivalis_user');
+            currentUser = null;
+            hideDashboard();
+        }
+        
+        // Dashboard functions
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Load section-specific data
+            if (sectionName === 'profile') {
+                loadProfileData();
+            } else if (sectionName === 'subscription') {
+                loadSubscriptionData();
+            }
+        }
+        
+        async function loadDashboardData() {
+            try {
+                const token = localStorage.getItem('nivalis_token');
+                const response = await fetch('/api/dashboard-data', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('activeStrategies').textContent = data.stats.active_strategies || '0';
+                    document.getElementById('revenuePotential').textContent = data.stats.revenue_potential || 'TBD';
+                    document.getElementById('executionScore').textContent = data.stats.execution_score || 'New User';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+        
+        async function loadProfileData() {
+            const profileData = document.getElementById('profileData');
+            profileData.innerHTML = '<div class="loading">Loading profile data...</div>';
+            
+            try {
+                const token = localStorage.getItem('nivalis_token');
+                const response = await fetch('/api/profile-data', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.profile) {
+                    profileData.innerHTML = `
+                        <div class="profile-info">
+                            <h4>Personal Information</h4>
+                            <p><strong>Name:</strong> ${data.profile.name || 'Not set'}</p>
+                            <p><strong>Email:</strong> ${data.profile.email || 'Not set'}</p>
+                            <p><strong>Current Income:</strong> ${data.profile.current_income || 'Not set'}</p>
+                            <p><strong>Income Goal:</strong> ${data.profile.income_goal || 'Not set'}</p>
+                            <p><strong>Experience Level:</strong> ${data.profile.experience_level || 'Not set'}</p>
+                            <p><strong>Current Stage:</strong> ${data.profile.current_stage || 'Not set'}</p>
+                            <p><strong>Skills:</strong> ${data.profile.skills ? data.profile.skills.join(', ') : 'Not set'}</p>
+                        </div>
+                    `;
+                } else {
+                    profileData.innerHTML = '<div class="no-data">Complete your profile setup to view data here.</div>';
+                }
+            } catch (error) {
+                profileData.innerHTML = '<div class="error">Error loading profile data.</div>';
+            }
+        }
+        
+        async function loadSubscriptionData() {
+            const subscriptionData = document.getElementById('subscriptionData');
+            subscriptionData.innerHTML = '<div class="loading">Loading subscription data...</div>';
+            
+            try {
+                const token = localStorage.getItem('nivalis_token');
+                const response = await fetch('/api/subscription-data', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    subscriptionData.innerHTML = `
+                        <div class="subscription-info">
+                            <div class="subscription-status ${data.subscription.active ? 'active' : 'inactive'}">
+                                <h4>Status: ${data.subscription.active ? 'Active' : 'Inactive'}</h4>
+                                <p><strong>Plan:</strong> ${data.subscription.plan || 'None'}</p>
+                                <p><strong>Started:</strong> ${data.subscription.start_date || 'N/A'}</p>
+                                ${data.subscription.next_billing ? `<p><strong>Next Billing:</strong> ${data.subscription.next_billing}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    subscriptionData.innerHTML = '<div class="no-data">No subscription found.</div>';
+                }
+            } catch (error) {
+                subscriptionData.innerHTML = '<div class="error">Error loading subscription data.</div>';
+            }
+        }
+        
+        function useTemplate(templateType) {
+            const templates = {
+                offer: "Create a high-ticket offer for my [SKILL] targeting [CLIENT TYPE] with [BUDGET RANGE] budgets",
+                content: "Write a viral video script about [TOPIC] for my [NICHE] audience",
+                calendar: "Build a 30-day content calendar for [BUSINESS TYPE] focusing on [MAIN BENEFIT]",
+                acquisition: "Design a client acquisition system for [SERVICE] with [TIME COMMITMENT] per week"
+            };
+            
+            const template = templates[templateType];
+            if (template) {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.close();
+                }
+                // Template will be used in the bot
+                alert(`Template copied! Use this in the bot:\n\n"${template}"`);
+            }
+        }
+        
+        function openBot() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.close();
+            }
+        }
+        
+        // Handle form submissions - check if elements exist first
+        const basicForm = document.getElementById('basicForm');
+        if (basicForm) {
+            basicForm.addEventListener('submit', function(e) {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.showConfirm('Proceed to Oracle Access subscription?', function(confirmed) {
+                        if (!confirmed) {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+        }
+        
+        const mvpForm = document.getElementById('mvpForm');
+        if (mvpForm) {
+            console.log('MVP form found, adding event listener');
+            mvpForm.addEventListener('submit', function(e) {
+                console.log('MVP form submitted');
+                e.preventDefault(); // Always prevent default form submission
+                
+                if (window.Telegram && window.Telegram.WebApp) {
+                    console.log('Telegram WebApp detected, proceeding directly to checkout');
+                    console.log('Creating checkout session...');
+                    // Create the checkout session via AJAX
+                    const formData = new FormData(document.getElementById('mvpForm'));
+                    
+                    fetch('/create-mvp-checkout-session', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        console.log('Response received:', response);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Data received:', data);
+                        if (data.checkout_url) {
+                            console.log('Opening checkout URL:', data.checkout_url);
+                            // Open Stripe checkout in external browser
+                            window.Telegram.WebApp.openLink(data.checkout_url);
+                        } else {
+                            throw new Error('No checkout URL received');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        if (window.Telegram && window.Telegram.WebApp.showAlert) {
+                            window.Telegram.WebApp.showAlert('Payment error. Please try again.');
+                        } else {
+                            alert('Payment error. Please try again.');
+                        }
+                    });
+                } else {
+                    console.log('Non-Telegram environment, submitting form normally');
+                    // Fallback for non-Telegram environments
+                    this.submit();
+                }
+            });
+        } else {
+            console.log('MVP form not found');
+        }
+        
+        // Enhanced logout function
+        function logout() {
+            currentUser = null;
+            clearUserSession();
+            document.getElementById('container').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            console.log('User logged out and session cleared');
+        }
+        
+        const notifyForm = document.getElementById('notifyForm');
+        if (notifyForm) {
+            notifyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.querySelector('input[name="name"]').value;
+                const email = document.querySelector('input[name="email"]').value;
+                
+                if (name && email) {
+                    // Store in local storage for now (can be enhanced with backend storage)
+                    const waitlist = JSON.parse(localStorage.getItem('nivalisWaitlist') || '[]');
+                    waitlist.push({ name, email, timestamp: new Date().toISOString() });
+                    localStorage.setItem('nivalisWaitlist', JSON.stringify(waitlist));
+                    
+                    // Show success message
+                    const button = document.querySelector('.notify-btn');
+                    const originalText = button.textContent;
+                    button.textContent = 'Added to Waitlist!';
+                    button.style.background = 'linear-gradient(135deg, #22d3ee, #06b6d4)';
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = 'linear-gradient(135deg, #f97316, #ea580c)';
+                        document.querySelector('input[name="name"]').value = '';
+                        document.querySelector('input[name="email"]').value = '';
+                    }, 2000);
+                    
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.showAlert('You\'ve been added to The Nivalis Order waitlist!');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

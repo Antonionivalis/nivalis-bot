@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Nivalis</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .success-container {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 130, 0, 0.1));
+            border: 2px solid #00d4ff;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+        
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        h1 {
+            color: #00d4ff;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        
+        .subscription-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #00d4ff;
+        }
+        
+        .next-steps {
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .next-steps h3 {
+            color: #ff8200;
+            margin-bottom: 15px;
+        }
+        
+        .next-steps ol {
+            padding-left: 20px;
+        }
+        
+        .next-steps li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .continue-btn {
+            background: linear-gradient(45deg, #00d4ff, #ff8200);
+            color: #000;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transform: scale(1);
+            transition: all 0.3s;
+        }
+        
+        .continue-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+        }
+        
+        .telegram-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 130, 0, 0.1);
+            border-radius: 15px;
+            border: 1px solid #ff8200;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">🎉</div>
+        <h1>Payment Successful!</h1>
+        
+        <div class="subscription-info">
+            <h3>Your Nivalis Account is Active</h3>
+            <p><strong>Subscription:</strong> {{ user_data.subscription_tier|title }} Access</p>
+            <p><strong>Email:</strong> {{ user_data.email }}</p>
+            <p><strong>Account Created:</strong> {{ user_data.account_created[:10] }}</p>
+        </div>
+        
+        <div class="next-steps">
+            <h3>Next Steps:</h3>
+            <ol>
+                <li><strong>Complete Your Profile:</strong> Fill out the strategic questionnaire</li>
+                <li><strong>Start Chatting:</strong> Return to Telegram and message the bot</li>
+                <li><strong>Get Personalized Advice:</strong> Receive tailored business strategies</li>
+            </ol>
+        </div>
+        
+        <button class="continue-btn" onclick="completeSetupAndReturn()">
+            Complete Setup & Return to Bot
+        </button>
+        
+        <div class="telegram-info">
+            <p><strong>Your bot access is now active!</strong></p>
+            <p>Return to the Telegram chat to start receiving personalized business advice from Nivalis.</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-login user with received token
+        const authToken = "{{ auth_token }}";
+        const userData = {{ user_data|tojson|safe }};
+        
+        if (authToken && userData) {
+            // Store authentication data
+            localStorage.setItem('nivalis_token', authToken);
+            localStorage.setItem('nivalis_user', JSON.stringify(userData));
+            
+            // Also store in session storage
+            sessionStorage.setItem('nivalis_token', authToken);
+            sessionStorage.setItem('nivalis_user', JSON.stringify(userData));
+            
+            console.log('User automatically logged in after payment');
+        }
+        
+        function completeSetupAndReturn() {
+            // Check if we're in Telegram WebApp
+            if (window.Telegram && window.Telegram.WebApp) {
+                // Close the Mini App and return to chat
+                window.Telegram.WebApp.close();
+            } else {
+                // If not in Telegram, redirect to onboarding
+                window.location.href = '/onboarding';
+            }
+        }
+        
+        // Initialize Telegram WebApp if available
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+            
+            // Set theme
+            document.body.style.backgroundColor = window.Telegram.WebApp.backgroundColor || '#0a0a0a';
+        }
+    </script>
+</body>
+</html>
