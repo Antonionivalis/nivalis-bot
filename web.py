@@ -152,6 +152,23 @@ def index():
     """Main landing page"""
     return render_template('index.html')
 
+@app.route('/health')
+def health():
+    """Health check endpoint"""
+    try:
+        # Check database connection
+        conn = get_db_connection()
+        if conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1")
+            cursor.close()
+            conn.close()
+            return {"status": "healthy", "database": "connected", "timestamp": datetime.datetime.now().isoformat()}
+        else:
+            return {"status": "unhealthy", "database": "disconnected"}, 500
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e)}, 500
+
 @app.route('/telegram-webhook', methods=['POST'])
 def telegram_webhook():
     """Handle Telegram webhook"""
@@ -236,17 +253,36 @@ Tap below to upgrade 👇"""
 def create_mvp_checkout_session():
     """Create Stripe checkout session for MVP access"""
     try:
+        # Get user_id from form data or Telegram WebApp
+        user_id = request.form.get('user_id') or request.json.get('user_id') if request.json else None
+        
+        if not user_id:
+            return "User ID required for payment processing", 400
+            
         checkout_session = stripe.checkout.Session.create(
             line_items=[{
-                'price': 'price_1QKlH1DhGdG2vys0NhcVWvmJ',  # Your actual Stripe price ID
+                'price_data': {
+                    'currency': 'gbp',
+                    'product_data': {
+                        'name': 'Nivalis Founder\'s Access',
+                        'description': 'Lifetime access to Nivalis AI strategic consultation'
+                    },
+                    'unit_amount': 9700,  # £97.00 in pence
+                },
                 'quantity': 1,
             }],
             mode='payment',
             success_url=f'https://{request.host}/success?session_id={{CHECKOUT_SESSION_ID}}',
             cancel_url=f'https://{request.host}/cancel',
-            metadata={'tier': 'mvp_lifetime'}
+            metadata={
+                'tier': 'mvp_lifetime',
+                'user_id': str(user_id)
+            }
         )
-        return redirect(checkout_session.url, code=303)
+        if checkout_session.url:
+            return redirect(checkout_session.url, code=303)
+        else:
+            return "Error creating checkout session", 500
     except Exception as e:
         logger.error(f"Stripe error: {e}")
         return str(e), 400
@@ -260,9 +296,10 @@ def success():
             session = stripe.checkout.Session.retrieve(session_id)
             if session.payment_status == 'paid':
                 # Add user to subscribers
-                user_id = session.metadata.get('user_id', 'unknown')
-                if user_id != 'unknown':
+                if session.metadata and 'user_id' in session.metadata:
+                    user_id = session.metadata['user_id']
                     add_subscriber(user_id, 'mvp_lifetime')
+                    logger.info(f"Added subscriber {user_id} via success page")
                 
                 return render_template('success.html')
         except Exception as e:
@@ -274,6 +311,16 @@ def success():
 def cancel():
     """Payment cancelled page"""
     return render_template('cancel.html')
+
+@app.route('/add-paid-user/<user_id>')
+def add_paid_user(user_id):
+    """Manually add paid user to subscriber database"""
+    try:
+        add_subscriber(user_id, 'mvp_lifetime')
+        return f"User {user_id} added to subscribers successfully"
+    except Exception as e:
+        logger.error(f"Error adding user {user_id}: {e}")
+        return f"Error: {e}", 500
 
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
