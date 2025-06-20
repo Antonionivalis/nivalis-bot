@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nivalis - Business Profile Setup</title>
+    <title>Business Intelligence Profile - Nivalis</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -13,131 +13,169 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e1b3c 0%, #2d2654 30%, #3a316b 70%, #4a3a82 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #0a1628 100%);
             color: #ffffff;
+            line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 500px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px 0;
+            padding: 40px 20px;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 50px;
         }
         
         .logo {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
             margin-bottom: 10px;
-            background: linear-gradient(90deg, #22d3ee 0%, #06b6d4 25%, #0891b2 50%, #f97316 75%, #ea580c 100%);
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .subtitle {
-            color: #a0a0a0;
-            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 30px;
         }
         
         .progress-bar {
-            background: rgba(255, 255, 255, 0.1);
+            width: 100%;
+            height: 6px;
+            background: rgba(30, 41, 59, 0.8);
             border-radius: 10px;
-            height: 8px;
-            margin-bottom: 30px;
             overflow: hidden;
+            margin-bottom: 40px;
         }
         
         .progress-fill {
-            background: linear-gradient(90deg, #22d3ee 0%, #06b6d4 25%, #0891b2 50%, #f97316 75%, #ea580c 100%);
             height: 100%;
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
             border-radius: 10px;
-            transition: width 0.3s ease;
             width: 0%;
-        }
-        
-        .progress-text {
-            text-align: center;
-            color: #a0a0a0;
-            font-size: 0.9rem;
-            margin-bottom: 30px;
+            transition: width 0.3s ease;
         }
         
         .question-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            display: none;
         }
         
-        .question-title {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            line-height: 1.4;
+        .question-card.active {
+            display: block;
+            animation: slideIn 0.5s ease;
         }
         
-        .answer-input {
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .question-number {
+            font-size: 0.9rem;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+        
+        .input-group {
+            margin-bottom: 30px;
+        }
+        
+        .text-input {
             width: 100%;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
             color: #ffffff;
             font-size: 1rem;
-            margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
         
-        .answer-input:focus {
+        .text-input:focus {
             outline: none;
             border-color: #00d4ff;
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
         }
         
-        .option-button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
+        .text-input::placeholder {
+            color: #64748b;
+        }
+        
+        .choice-options {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .choice-option {
+            padding: 15px 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-align: left;
+            color: #ffffff;
         }
         
-        .option-button:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .choice-option:hover {
             border-color: #00d4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
         }
         
-        .option-button.selected {
-            background: linear-gradient(45deg, #00d4ff, #ff7b00);
-            border-color: transparent;
+        .choice-option.selected {
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            border-color: #00d4ff;
+            color: #ffffff;
+        }
+        
+        .multiple-choice {
+            display: grid;
+            gap: 10px;
         }
         
         .checkbox-option {
             display: flex;
             align-items: center;
-            padding: 12px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 15px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 2px solid rgba(0, 212, 255, 0.2);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
             cursor: pointer;
             transition: all 0.3s ease;
         }
         
         .checkbox-option:hover {
-            background: rgba(255, 255, 255, 0.1);
+            border-color: #00d4ff;
         }
         
         .checkbox-option.selected {
@@ -145,378 +183,456 @@
             border-color: #00d4ff;
         }
         
-        .checkbox-option input[type="checkbox"] {
-            margin-right: 10px;
-            accent-color: #00d4ff;
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #64748b;
+            border-radius: 4px;
+            margin-right: 12px;
+            position: relative;
         }
         
-        .action-buttons {
+        .checkbox-option.selected .checkbox {
+            background: #00d4ff;
+            border-color: #00d4ff;
+        }
+        
+        .checkbox-option.selected .checkbox::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 20px;
+            justify-content: space-between;
+            margin-top: 40px;
         }
         
         .btn {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            border: none;
+            min-width: 120px;
+        }
+        
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.8);
+            color: #94a3b8;
+            border: 2px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            border-color: #00d4ff;
+            color: #ffffff;
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, #00d4ff, #ff7b00);
-            color: white;
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
         }
         
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
         }
         
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .completion-message {
+        .completion-card {
+            display: none;
             text-align: center;
-            padding: 40px 20px;
+        }
+        
+        .completion-card.active {
+            display: block;
+        }
+        
+        .completion-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
         }
         
         .completion-title {
-            font-size: 1.5rem;
+            font-size: 2.2rem;
+            font-weight: 700;
             margin-bottom: 15px;
-            color: #00d4ff;
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
-        .completion-text {
-            color: #a0a0a0;
-            line-height: 1.6;
+        .completion-message {
+            font-size: 1.1rem;
+            color: #94a3b8;
             margin-bottom: 30px;
+            line-height: 1.6;
         }
         
-        .loading {
-            display: none;
-            text-align: center;
-            color: #a0a0a0;
-            margin: 20px 0;
+        .bot-access-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            color: white;
+            text-decoration: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.3);
         }
         
-        .error {
-            display: none;
-            color: #ff4757;
-            background: rgba(255, 71, 87, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
+        .bot-access-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .question-card {
+                padding: 25px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">NIVALIS</div>
-            <div class="subtitle">Business Intelligence Profile</div>
-            
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">Question 1 of 12</div>
+            <h1 class="logo">NIVALIS</h1>
+            <p class="subtitle">Business Intelligence Profile</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
         </div>
         
         <div id="questionContainer">
             <!-- Questions will be loaded here -->
         </div>
         
-        <div class="loading" id="loading">Loading next question...</div>
-        <div class="error" id="error">Something went wrong. Please try again.</div>
-        
-        <div id="completionScreen" style="display: none;">
-            <div class="completion-message">
-                <div class="completion-title">✓ Intelligence Gathered</div>
-                <div class="completion-text">
-                    Your profile is locked and loaded. I've analyzed your situation, skills, and objectives. 
-                    Time to get to work. Return to the bot for your first mission briefing.
-                </div>
-                <button class="btn btn-primary" onclick="completeOnboarding()">
-                    Begin Operations
-                </button>
-            </div>
+        <div class="question-card completion-card" id="completionCard">
+            <div class="completion-icon">🎯</div>
+            <h2 class="completion-title">Profile Complete!</h2>
+            <p class="completion-message">
+                Your business intelligence profile has been created. Nivalis now has the context needed to provide targeted strategic consultation for your specific situation.
+            </p>
+            <a href="https://t.me/NivalisOrderBot" class="bot-access-btn" target="_blank">
+                🚀 Access Nivalis Consultation
+            </a>
         </div>
     </div>
 
     <script>
-        // Initialize Telegram WebApp
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-        
-        let currentQuestion = null;
-        let currentAnswer = null;
-        let selectedOptions = [];
-        
-        // Load first question
-        loadNextQuestion();
-        
-        function loadNextQuestion() {
-            showLoading(true);
-            hideError();
-            
-            fetch('/onboarding/next-question')
-                .then(response => response.json())
-                .then(data => {
-                    showLoading(false);
-                    
-                    if (data.success) {
-                        if (data.completed) {
-                            showCompletionScreen();
-                        } else {
-                            displayQuestion(data.question, data.progress);
-                        }
-                    } else {
-                        showError('Failed to load question');
-                    }
-                })
-                .catch(error => {
-                    console.error('Load question error:', error);
-                    showLoading(false);
-                    showError('Failed to load question');
-                });
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
         }
-        
-        function displayQuestion(question, progress) {
-            currentQuestion = question;
-            currentAnswer = null;
-            selectedOptions = [];
+
+        // Onboarding questions data
+        const questions = [
+            {
+                id: 'name',
+                question: 'What\'s your full name?',
+                type: 'text',
+                placeholder: 'Enter your full name'
+            },
+            {
+                id: 'email',
+                question: 'What\'s your email address?',
+                type: 'email',
+                placeholder: 'Enter your email'
+            },
+            {
+                id: 'telegram_username',
+                question: 'What\'s your Telegram username? (optional)',
+                type: 'text',
+                placeholder: 'Without the @ symbol'
+            },
+            {
+                id: 'current_income',
+                question: 'What\'s your current monthly income range?',
+                type: 'choice',
+                options: [
+                    '£0 - £1,000',
+                    '£1,000 - £5,000',
+                    '£5,000 - £10,000',
+                    '£10,000 - £25,000',
+                    '£25,000 - £50,000',
+                    '£50,000+'
+                ]
+            },
+            {
+                id: 'income_goal',
+                question: 'What\'s your monthly income goal?',
+                type: 'choice',
+                options: [
+                    '£5,000 - £10,000',
+                    '£10,000 - £25,000',
+                    '£25,000 - £50,000',
+                    '£50,000 - £100,000',
+                    '£100,000+'
+                ]
+            },
+            {
+                id: 'business_experience',
+                question: 'What\'s your business experience level?',
+                type: 'choice',
+                options: [
+                    'Complete beginner',
+                    'Some experience, no revenue yet',
+                    'Making some money (under £1k/month)',
+                    'Consistent revenue (£1k-£10k/month)',
+                    'Established business (£10k+/month)'
+                ]
+            },
+            {
+                id: 'available_capital',
+                question: 'How much capital do you have available to invest?',
+                type: 'choice',
+                options: [
+                    '£0 - £500',
+                    '£500 - £2,000',
+                    '£2,000 - £10,000',
+                    '£10,000 - £50,000',
+                    '£50,000+'
+                ]
+            },
+            {
+                id: 'current_stage',
+                question: 'What stage are you at right now?',
+                type: 'choice',
+                options: [
+                    'Looking for business ideas',
+                    'Have an idea, need validation',
+                    'Validating/testing my concept',
+                    'Building my first product/service',
+                    'Have product, need customers',
+                    'Scaling existing business'
+                ]
+            },
+            {
+                id: 'time_commitment',
+                question: 'How many hours per week can you dedicate to your business?',
+                type: 'choice',
+                options: [
+                    '5-10 hours (part-time)',
+                    '10-20 hours (serious side hustle)',
+                    '20-40 hours (almost full-time)',
+                    '40+ hours (full-time commitment)'
+                ]
+            },
+            {
+                id: 'biggest_challenge',
+                question: 'What\'s your biggest challenge right now?',
+                type: 'choice',
+                options: [
+                    'Finding the right business idea',
+                    'Understanding my target market',
+                    'Creating a compelling offer',
+                    'Marketing and lead generation',
+                    'Converting leads to sales',
+                    'Scaling and systemizing',
+                    'Creating content'
+                ]
+            },
+            {
+                id: 'skills_expertise',
+                question: 'What skills or expertise do you have? (Select all that apply)',
+                type: 'multiple_choice',
+                options: [
+                    'Marketing/Advertising',
+                    'Sales',
+                    'Technical/Programming',
+                    'Design/Creative',
+                    'Writing/Content',
+                    'Consulting/Coaching',
+                    'Finance/Accounting',
+                    'Operations/Project Management',
+                    'Industry-specific knowledge',
+                    'Other'
+                ]
+            },
+            {
+                id: 'urgency_level',
+                question: 'How urgent is your need to increase income?',
+                type: 'choice',
+                options: [
+                    'Not urgent, just exploring',
+                    'Would be nice within 6-12 months',
+                    'Important within 3-6 months',
+                    'Critical within 1-3 months',
+                    'Extremely urgent (financial pressure)'
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = {};
+
+        function updateProgress() {
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function renderQuestion(index) {
+            const question = questions[index];
+            const container = document.getElementById('questionContainer');
             
-            // Update progress
-            const progressPercent = (progress.current / progress.total) * 100;
-            document.getElementById('progressFill').style.width = progressPercent + '%';
-            document.getElementById('progressText').textContent = `Question ${progress.current} of ${progress.total}`;
-            
-            // Build question HTML
-            let html = `
-                <div class="question-card">
-                    <div class="question-title">${question.question}</div>
-            `;
+            let inputHtml = '';
             
             if (question.type === 'text' || question.type === 'email') {
-                html += `
-                    <input type="${question.type === 'email' ? 'email' : 'text'}" 
-                           class="answer-input" 
-                           id="textAnswer" 
-                           placeholder="Your answer..."
-                           oninput="setTextAnswer(this.value)"
-                           onchange="setTextAnswer(this.value)"
-                           onkeyup="setTextAnswer(this.value)">
+                inputHtml = `
+                    <div class="input-group">
+                        <input type="${question.type}" 
+                               class="text-input" 
+                               id="answer_${question.id}"
+                               placeholder="${question.placeholder}"
+                               value="${answers[question.id] || ''}"
+                               onchange="saveAnswer('${question.id}', this.value)">
+                    </div>
                 `;
             } else if (question.type === 'choice') {
-                question.options.forEach((option, index) => {
-                    html += `
-                        <button class="option-button" onclick="selectOption('${option}')">
-                            ${option}
-                        </button>
-                    `;
-                });
+                inputHtml = `
+                    <div class="choice-options">
+                        ${question.options.map(option => `
+                            <div class="choice-option ${answers[question.id] === option ? 'selected' : ''}"
+                                 onclick="selectChoice('${question.id}', '${option}')">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             } else if (question.type === 'multiple_choice') {
-                question.options.forEach((option, index) => {
-                    html += `
-                        <div class="checkbox-option" onclick="toggleOption('${option}')">
-                            <input type="checkbox" id="option_${index}" onchange="toggleOption('${option}')">
-                            <label for="option_${index}">${option}</label>
-                        </div>
-                    `;
-                });
-                
-                // Add text input for "Other" option if it exists
-                if (question.options.includes('Other')) {
-                    html += `
-                        <div style="margin-top: 15px; display: none;" id="otherTextContainer">
-                            <input type="text" 
-                                   class="answer-input" 
-                                   id="otherText" 
-                                   placeholder="Please specify..."
-                                   oninput="handleOtherText(this.value)"
-                                   style="margin-top: 10px;">
-                        </div>
-                    `;
-                }
+                const selectedAnswers = answers[question.id] || [];
+                inputHtml = `
+                    <div class="multiple-choice">
+                        ${question.options.map(option => `
+                            <div class="checkbox-option ${selectedAnswers.includes(option) ? 'selected' : ''}"
+                                 onclick="toggleMultipleChoice('${question.id}', '${option}')">
+                                <div class="checkbox"></div>
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             }
             
-            html += `
-                    <div class="action-buttons">
-                        <button class="btn btn-primary" onclick="submitAnswer()" id="submitBtn" disabled>
-                            Continue
+            container.innerHTML = `
+                <div class="question-card active">
+                    <div class="question-number">Question ${index + 1} of ${questions.length}</div>
+                    <h2 class="question-text">${question.question}</h2>
+                    ${inputHtml}
+                    <div class="buttons">
+                        <button class="btn btn-secondary" onclick="previousQuestion()" ${index === 0 ? 'style="visibility: hidden;"' : ''}>
+                            Previous
+                        </button>
+                        <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">
+                            ${index === questions.length - 1 ? 'Complete Profile' : 'Next'}
                         </button>
                     </div>
                 </div>
             `;
             
-            document.getElementById('questionContainer').innerHTML = html;
+            updateProgress();
         }
-        
-        function setTextAnswer(value) {
-            currentAnswer = value.trim();
-            updateSubmitButton();
+
+        function saveAnswer(questionId, value) {
+            answers[questionId] = value;
         }
-        
-        function selectOption(option) {
-            currentAnswer = option;
+
+        function selectChoice(questionId, option) {
+            answers[questionId] = option;
+            renderQuestion(currentQuestion);
+        }
+
+        function toggleMultipleChoice(questionId, option) {
+            if (!answers[questionId]) answers[questionId] = [];
             
-            // Update UI
-            document.querySelectorAll('.option-button').forEach(btn => {
-                btn.classList.remove('selected');
-                if (btn.textContent.trim() === option) {
-                    btn.classList.add('selected');
-                }
-            });
-            
-            updateSubmitButton();
-        }
-        
-        function toggleOption(option) {
-            const index = selectedOptions.indexOf(option);
+            const index = answers[questionId].indexOf(option);
             if (index > -1) {
-                selectedOptions.splice(index, 1);
+                answers[questionId].splice(index, 1);
             } else {
-                selectedOptions.push(option);
+                answers[questionId].push(option);
             }
             
-            // Show/hide "Other" text input
-            if (option === 'Other') {
-                const otherContainer = document.getElementById('otherTextContainer');
-                if (otherContainer) {
-                    if (selectedOptions.includes('Other')) {
-                        otherContainer.style.display = 'block';
-                    } else {
-                        otherContainer.style.display = 'none';
-                        document.getElementById('otherText').value = '';
-                    }
-                }
+            renderQuestion(currentQuestion);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion === questions.length - 1) {
+                completeOnboarding();
+            } else {
+                currentQuestion++;
+                renderQuestion(currentQuestion);
             }
-            
-            currentAnswer = selectedOptions.length > 0 ? selectedOptions : null;
-            
-            // Update UI
-            document.querySelectorAll('.checkbox-option').forEach(div => {
-                const isSelected = selectedOptions.includes(option) && div.textContent.trim().includes(option);
-                div.classList.toggle('selected', isSelected);
-            });
-            
-            updateSubmitButton();
         }
-        
-        function handleOtherText(value) {
-            // Store the "Other" specification
-            window.otherSpecification = value.trim();
-            updateSubmitButton();
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion(currentQuestion);
+            }
         }
-        
-        function updateSubmitButton() {
-            const submitBtn = document.getElementById('submitBtn');
-            let hasAnswer = false;
-            
-            if (currentAnswer !== null && currentAnswer !== undefined) {
-                if (typeof currentAnswer === 'string') {
-                    hasAnswer = currentAnswer.trim().length > 0;
-                } else if (Array.isArray(currentAnswer)) {
-                    hasAnswer = currentAnswer.length > 0;
+
+        async function completeOnboarding() {
+            try {
+                const response = await fetch('/api/complete-onboarding', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        answers: answers,
+                        payment_session: sessionStorage.getItem('payment_session')
+                    })
+                });
+
+                if (response.ok) {
+                    showCompletion();
                 } else {
-                    hasAnswer = true; // For boolean or other valid values
+                    alert('Error saving profile. Please try again.');
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error saving profile. Please try again.');
             }
-            
-            submitBtn.disabled = !hasAnswer;
-            submitBtn.style.opacity = hasAnswer ? '1' : '0.5';
         }
-        
-        function submitAnswer() {
-            console.log('Submit clicked, currentAnswer:', currentAnswer);
-            console.log('Current question:', currentQuestion);
-            
-            if (!currentAnswer || currentAnswer === null || currentAnswer === undefined) {
-                console.log('No answer provided');
-                showError('Please provide an answer before continuing');
-                return;
-            }
-            
-            // Handle "Other" specification for skills question
-            let finalAnswer = currentAnswer;
-            if (currentQuestion.id === 'skills_expertise' && selectedOptions.includes('Other') && window.otherSpecification) {
-                // Replace "Other" with the specific text
-                finalAnswer = selectedOptions.map(option => 
-                    option === 'Other' ? `Other: ${window.otherSpecification}` : option
-                );
-            }
-            
-            showLoading(true);
-            hideError();
-            
-            fetch('/onboarding/submit-answer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    question_id: currentQuestion.id,
-                    answer: finalAnswer
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Submit response:', data);
-                showLoading(false);
-                
-                if (data.success) {
-                    if (data.completed) {
-                        showCompletionScreen();
-                    } else {
-                        loadNextQuestion();
-                    }
-                } else {
-                    showError(data.error || 'Failed to submit answer');
-                }
-            })
-            .catch(error => {
-                console.error('Submit answer error:', error);
-                showLoading(false);
-                showError('Failed to submit answer');
-            });
-        }
-        
-        function showCompletionScreen() {
+
+        function showCompletion() {
             document.getElementById('questionContainer').style.display = 'none';
-            document.getElementById('completionScreen').style.display = 'block';
+            document.getElementById('completionCard').classList.add('active');
             document.getElementById('progressFill').style.width = '100%';
-            document.getElementById('progressText').textContent = 'Profile Complete!';
         }
-        
-        function completeOnboarding() {
-            // Close the WebApp and return to bot
-            window.Telegram.WebApp.close();
-        }
-        
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-        }
-        
-        function showError(message) {
-            const errorEl = document.getElementById('error');
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-        }
-        
-        function hideError() {
-            document.getElementById('error').style.display = 'none';
-        }
+
+        // Initialize first question
+        renderQuestion(0);
     </script>
 </body>
 </html>
