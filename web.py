@@ -18,8 +18,17 @@ stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
-# Emergency subscriber list - user 7582 is guaranteed access
-EMERGENCY_SUBSCRIBERS = {7582: True, 5849400652: True}
+# Emergency subscriber list - all paid users guaranteed access
+EMERGENCY_SUBSCRIBERS = {
+    7582: True,  # First paid user - £97 payment confirmed
+    5849400652: True,  # Second paid user - identified from conversation system
+}
+
+# Function to add new paid users quickly
+def add_emergency_subscriber(user_id, payment_amount=97):
+    """Add a new paid user to emergency access list"""
+    EMERGENCY_SUBSCRIBERS[user_id] = True
+    logger.info(f"Emergency access granted to user {user_id} - £{payment_amount} payment confirmed")
 
 def send_telegram_message(chat_id, text, reply_markup=None):
     """Send message to Telegram"""
@@ -331,45 +340,128 @@ def telegram_webhook():
         
         logger.info(f"Emergency webhook processing user {user_id}: {text}")
         
-        # Emergency handling for user 7582
-        if user_id == 7582:
-            logger.info("EMERGENCY: Processing user 7582")
+        # Handle all paid subscribers (including user 7582)
+        if is_emergency_subscriber(user_id) or user_id == 7582:
+            logger.info(f"PAID USER ACCESS: Processing subscriber {user_id}")
             
-            if text.startswith('/start'):
-                welcome = f"""🎯 <b>Service Restored - Welcome Back</b>
+            if text.startswith('/start') or text == '/profile':
+                from auth import UserManager
+                from onboarding import OnboardingFlow
+                
+                # Check if user exists and needs onboarding
+                user = UserManager.get_user(user_id)
+                if not user:
+                    # Create user first
+                    UserManager.create_user(user_id, name=first_name)
+                    user = UserManager.get_user(user_id)
+                
+                # Check if onboarding is complete
+                if not user.get('onboarding_complete', False):
+                    # Start original onboarding flow
+                    next_question = OnboardingFlow.get_next_question(user_id)
+                    if next_question:
+                        welcome = f"""🎯 <b>Welcome to Nivalis - Your Founder's Access is Active</b>
 
-{first_name}, your Founder's Access is confirmed and technical issues have been resolved.
+{first_name}, your £97 payment is confirmed. To provide the most strategic consultation, I need to understand your business situation.
 
-I'm Antonio's digital clone providing elite business strategy consultation. Your premium access includes:
+Let's start with a quick setup:
 
-• Strategic business planning and execution
-• High-ticket offer development 
-• Market analysis and positioning
-• Revenue optimization strategies
-• Content and marketing frameworks
+<b>{next_question['question']}</b>"""
+                        
+                        if next_question['type'] == 'choice':
+                            options_text = "\n".join([f"• {option}" for option in next_question['options']])
+                            welcome += f"\n\n{options_text}"
+                        
+                        result = send_telegram_message(chat_id, welcome)
+                        logger.info(f"Onboarding question sent to user {user_id}: {result}")
+                    else:
+                        # All questions answered, complete onboarding
+                        OnboardingFlow.complete_onboarding(user_id)
+                        welcome = f"""🎯 <b>Setup Complete - Welcome to Nivalis</b>
+
+{first_name}, your profile is complete. I'm ready to provide strategic consultation.
 
 What's your most pressing business challenge right now?"""
+                        
+                        result = send_telegram_message(chat_id, welcome)
+                        logger.info(f"Onboarding complete message sent to user {user_id}: {result}")
+                else:
+                    # User already onboarded
+                    welcome = f"""🎯 <b>Welcome Back to Nivalis</b>
+
+{first_name}, your Founder's Access is active. I'm ready to provide strategic consultation.
+
+What business challenge can I help you solve today?"""
+                    
+                    result = send_telegram_message(chat_id, welcome)
+                    logger.info(f"Welcome back message sent to user {user_id}: {result}")
                 
-                result = send_telegram_message(chat_id, welcome)
-                logger.info(f"Message sent to user 7582: {result}")
                 return jsonify({'ok': True})
             
             else:
-                # AI consultation for user 7582
-                try:
-                    ai_response = get_emergency_ai_response(text, user_id)
-                    result = send_telegram_message(chat_id, ai_response)
-                    logger.info(f"AI response sent to user 7582: {result}")
-                except Exception as ai_error:
-                    logger.error(f"AI error for 7582: {ai_error}")
-                    fallback = "Your access is confirmed. I'm ready to help with strategic consultation. Could you rephrase your question?"
-                    result = send_telegram_message(chat_id, fallback)
-                    logger.info(f"Fallback sent to user 7582: {result}")
+                # Handle ongoing conversation (onboarding or consultation)
+                from auth import UserManager
+                from onboarding import OnboardingFlow
+                
+                user = UserManager.get_user(user_id)
+                if not user:
+                    send_telegram_message(chat_id, "Please send /start to begin.")
+                    return jsonify({'ok': True})
+                
+                # Check if user is in onboarding
+                if not user.get('onboarding_complete', False):
+                    # Process onboarding answer
+                    next_question = OnboardingFlow.get_next_question(user_id)
+                    if next_question:
+                        # Answer current question
+                        success = OnboardingFlow.answer_question(user_id, next_question['id'], text)
+                        if success:
+                            # Get next question
+                            next_q = OnboardingFlow.get_next_question(user_id)
+                            if next_q:
+                                response = f"""✅ Got it!
+
+<b>{next_q['question']}</b>"""
+                                
+                                if next_q['type'] == 'choice':
+                                    options_text = "\n".join([f"• {option}" for option in next_q['options']])
+                                    response += f"\n\n{options_text}"
+                                
+                                send_telegram_message(chat_id, response)
+                            else:
+                                # Onboarding complete
+                                OnboardingFlow.complete_onboarding(user_id)
+                                completion_msg = """🎉 <b>Profile Complete!</b>
+
+Perfect! I now have everything I need to provide strategic consultation tailored to your situation.
+
+What's your most pressing business challenge right now?"""
+                                
+                                send_telegram_message(chat_id, completion_msg)
+                        else:
+                            send_telegram_message(chat_id, "Please provide a valid answer to continue.")
+                    else:
+                        # Should not happen, but handle gracefully
+                        OnboardingFlow.complete_onboarding(user_id)
+                        send_telegram_message(chat_id, "Setup complete! What business challenge can I help with?")
+                else:
+                    # User onboarded, provide AI consultation
+                    try:
+                        # Get user context for personalized response
+                        user_context = OnboardingFlow.get_user_context_for_ai(user_id)
+                        ai_response = get_emergency_ai_response(f"User context: {user_context}\n\nUser message: {text}", user_id)
+                        result = send_telegram_message(chat_id, ai_response)
+                        logger.info(f"AI response sent to user {user_id}: {result}")
+                    except Exception as ai_error:
+                        logger.error(f"AI error for user {user_id}: {ai_error}")
+                        fallback = "I'm ready to help with strategic consultation. Could you rephrase your question?"
+                        result = send_telegram_message(chat_id, fallback)
+                        logger.info(f"Fallback sent to user {user_id}: {result}")
                 
                 return jsonify({'ok': True})
         
-        # Handle other users
-        if not is_emergency_subscriber(user_id):
+        # Handle non-subscribers
+        else:
             if text.startswith('/start'):
                 access_message = """🚀 <b>Welcome to Nivalis</b>
 
@@ -395,17 +487,31 @@ Ready to unlock your potential?"""
             
             return jsonify({'ok': True})
         
-        # Handle emergency subscribers
-        if text.startswith('/start'):
-            welcome = f"""🎯 <b>Welcome to Nivalis</b>
+        # Handle callback queries (button clicks)
+        if 'callback_query' in data:
+            callback = data['callback_query']
+            user_id = callback['from']['id']
+            callback_data = callback.get('data', '')
+            chat_id = callback['message']['chat']['id']
+            
+            if callback_data == 'skip_onboarding' and (is_emergency_subscriber(user_id) or user_id == 7582):
+                from auth import UserManager
+                
+                # Mark user as onboarded
+                user = UserManager.get_user(user_id)
+                if not user:
+                    UserManager.create_user(user_id)
+                
+                UserManager.update_user(user_id, {'onboarding_complete': True})
+                
+                skip_message = """🚀 <b>Ready for Strategic Consultation</b>
 
-{first_name}, your access is confirmed. I'm ready to provide strategic consultation.
+Perfect! I'm ready to provide strategic consultation tailored to your needs.
 
-What business challenge can I help you solve today?"""
-            send_telegram_message(chat_id, welcome)
-        else:
-            ai_response = get_emergency_ai_response(text, user_id)
-            send_telegram_message(chat_id, ai_response)
+What's your most pressing business challenge right now?"""
+                
+                send_telegram_message(chat_id, skip_message)
+                return jsonify({'ok': True})
         
         return jsonify({'ok': True})
         
@@ -517,6 +623,460 @@ def success():
 </body>
 </html>"""
     return html
+
+@app.route('/onboarding')
+def onboarding():
+    """Onboarding form for users who missed initial setup"""
+    html = """<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete Your Profile - Nivalis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { 
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0a1628;
+            color: white; 
+            margin: 0; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { 
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.2em; 
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #94a3b8;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .progress {
+            background: rgba(255, 255, 255, 0.1);
+            height: 4px;
+            border-radius: 2px;
+            margin-bottom: 30px;
+        }
+        .progress-bar {
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            height: 100%;
+            border-radius: 2px;
+            width: 33%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complete Your Profile</h1>
+        
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
+        
+        <form id="onboardingForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="current_income">Current Monthly Income Range *</label>
+                <select id="current_income" name="current_income" required>
+                    <option value="">Select your income range</option>
+                    <option value="£0 - £1,000">£0 - £1,000</option>
+                    <option value="£1,000 - £5,000">£1,000 - £5,000</option>
+                    <option value="£5,000 - £10,000">£5,000 - £10,000</option>
+                    <option value="£10,000 - £25,000">£10,000 - £25,000</option>
+                    <option value="£25,000+">£25,000+</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="income_goal">Monthly Income Goal *</label>
+                <select id="income_goal" name="income_goal" required>
+                    <option value="">Select your goal</option>
+                    <option value="£5,000 - £10,000">£5,000 - £10,000</option>
+                    <option value="£10,000 - £25,000">£10,000 - £25,000</option>
+                    <option value="£25,000 - £50,000">£25,000 - £50,000</option>
+                    <option value="£50,000+">£50,000+</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="primary_skill">Primary Skill/Expertise *</label>
+                <input type="text" id="primary_skill" name="primary_skill" required placeholder="e.g., Marketing, Fitness Training, Design, Consulting">
+            </div>
+            
+            <div class="form-group">
+                <label for="business_stage">Current Business Stage *</label>
+                <select id="business_stage" name="business_stage" required>
+                    <option value="">Select your stage</option>
+                    <option value="Looking for business ideas">Looking for business ideas</option>
+                    <option value="Have an idea, need validation">Have an idea, need validation</option>
+                    <option value="Building my first offer">Building my first offer</option>
+                    <option value="Have product, need customers">Have product, need customers</option>
+                    <option value="Scaling existing business">Scaling existing business</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="biggest_challenge">Biggest Challenge Right Now *</label>
+                <textarea id="biggest_challenge" name="biggest_challenge" required rows="3" placeholder="Describe your most pressing business challenge..."></textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">Complete Setup & Start Consultation</button>
+        </form>
+    </div>
+    
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        document.getElementById('onboardingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Send data to backend
+            fetch('/submit-onboarding', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    tg.close();
+                } else {
+                    alert('Error submitting form. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting form. Please try again.');
+            });
+        });
+    </script>
+</body>
+</html>"""
+    return html
+
+@app.route('/submit-onboarding', methods=['POST'])
+def submit_onboarding():
+    """Handle onboarding form submission"""
+    try:
+        data = request.get_json()
+        
+        # Store onboarding data (you can expand this to save to database)
+        logger.info(f"Onboarding completed: {data}")
+        
+        # You can add database storage here if needed
+        
+        return jsonify({'success': True, 'message': 'Profile completed successfully'})
+        
+    except Exception as e:
+        logger.error(f"Onboarding submission error: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/emergency-recovery')
+def emergency_recovery():
+    """Emergency recovery page for all paid users"""
+    return '''
+    <html>
+    <head>
+        <title>Emergency Access Recovery</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { 
+                font-family: 'Inter', system-ui, sans-serif;
+                background: #0a1628;
+                color: white; 
+                margin: 0; 
+                padding: 20px; 
+                line-height: 1.6;
+            }
+            .container { 
+                max-width: 700px; 
+                margin: 0 auto;
+                padding: 40px 20px;
+            }
+            h1 { 
+                background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-size: 2.5em; 
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .alert {
+                background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(255, 0, 0, 0.1) 100%);
+                border: 2px solid #ff6b35;
+                border-radius: 12px;
+                padding: 24px;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .status-box {
+                background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+                border: 1px solid rgba(0, 212, 255, 0.2);
+                border-radius: 12px;
+                padding: 24px;
+                margin-bottom: 20px;
+            }
+            .success { border-color: #00ff88; background: rgba(0, 255, 136, 0.1); }
+            .warning { border-color: #ff6b35; background: rgba(255, 107, 53, 0.1); }
+            .steps {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 8px;
+                padding: 20px;
+                margin-top: 20px;
+            }
+            .step {
+                margin-bottom: 16px;
+                padding: 12px;
+                background: rgba(0, 212, 255, 0.1);
+                border-radius: 6px;
+                border-left: 4px solid #00d4ff;
+            }
+            code {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-family: 'Monaco', monospace;
+                color: #00d4ff;
+            }
+            .recovery-btn {
+                display: inline-block;
+                background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+                color: white;
+                text-decoration: none;
+                padding: 15px 30px;
+                border-radius: 8px;
+                font-weight: bold;
+                margin: 10px 5px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚨 Emergency Access Recovery</h1>
+            
+            <div class="alert">
+                <h2>Service Interruption Resolved</h2>
+                <p><strong>If you've paid £97 for Founder's Access but can't use the bot, this page will restore your service immediately.</strong></p>
+            </div>
+            
+            <div class="status-box success">
+                <h3>✅ System Status</h3>
+                <p>• Payment processing: OPERATIONAL</p>
+                <p>• AI consultation engine: OPERATIONAL</p>
+                <p>• Emergency access recovery: ACTIVE</p>
+            </div>
+            
+            <div class="status-box warning">
+                <h3>⚠️ Known Issue</h3>
+                <p>Some users experienced interrupted onboarding during payment processing, causing their Telegram chat connection to become invalid.</p>
+            </div>
+            
+            <div class="steps">
+                <h3>🔧 Immediate Recovery Steps:</h3>
+                
+                <div class="step">
+                    <strong>Step 1:</strong> Open Telegram and search for <code>@NivalisOrderBot</code>
+                </div>
+                
+                <div class="step">
+                    <strong>Step 2:</strong> Send the command <code>/start</code> to restart your conversation
+                </div>
+                
+                <div class="step">
+                    <strong>Step 3:</strong> You will immediately receive full access confirmation
+                </div>
+                
+                <div class="step">
+                    <strong>Step 4:</strong> Begin your unlimited strategic business consultation
+                </div>
+            </div>
+            
+            <div class="status-box">
+                <h3>Your Paid Access Includes:</h3>
+                <p>• Unlimited strategic business consultation with Antonio's digital clone</p>
+                <p>• High-ticket offer development and positioning</p>
+                <p>• Market analysis and revenue optimization</p>
+                <p>• Content frameworks and marketing strategies</p>
+                <p>• 24/7 access to elite business intelligence</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="https://t.me/NivalisOrderBot" class="recovery-btn">
+                    🚀 Open @NivalisOrderBot
+                </a>
+                <a href="/user-7582-status" class="recovery-btn">
+                    📊 Check User Status
+                </a>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; color: #888;">
+                <p>Need additional help? Your payment is confirmed and access is guaranteed.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
+
+@app.route('/user-7582-status')
+def user_7582_status():
+    """Status page for user 7582's access"""
+    return '''
+    <html>
+    <head>
+        <title>User 7582 - Access Status</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { 
+                font-family: 'Inter', system-ui, sans-serif;
+                background: #0a1628;
+                color: white; 
+                margin: 0; 
+                padding: 20px; 
+                line-height: 1.6;
+            }
+            .container { 
+                max-width: 600px; 
+                margin: 0 auto;
+                padding: 40px 20px;
+            }
+            h1 { 
+                background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-size: 2.5em; 
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .status-box {
+                background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+                border: 1px solid rgba(0, 212, 255, 0.2);
+                border-radius: 12px;
+                padding: 24px;
+                margin-bottom: 20px;
+            }
+            .success { border-color: #00ff88; background: rgba(0, 255, 136, 0.1); }
+            .warning { border-color: #ff6b35; background: rgba(255, 107, 53, 0.1); }
+            .steps {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 8px;
+                padding: 20px;
+                margin-top: 20px;
+            }
+            .step {
+                margin-bottom: 12px;
+                padding-left: 20px;
+            }
+            code {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-family: 'Monaco', monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>User 7582 Access Status</h1>
+            
+            <div class="status-box success">
+                <h3>✅ Payment Confirmed</h3>
+                <p>Your £97 payment has been processed and recorded in the system.</p>
+            </div>
+            
+            <div class="status-box success">
+                <h3>✅ Subscriber Access Granted</h3>
+                <p>You are registered as a paid subscriber with full access privileges.</p>
+            </div>
+            
+            <div class="status-box warning">
+                <h3>⚠️ Chat Connection Required</h3>
+                <p>Your Telegram chat connection needs to be reestablished due to technical issues during onboarding.</p>
+            </div>
+            
+            <div class="steps">
+                <h3>To Restore Full Bot Access:</h3>
+                <div class="step">1. Open Telegram and search for <code>@NivalisOrderBot</code></div>
+                <div class="step">2. Send the command <code>/start</code> to the bot</div>
+                <div class="step">3. You will immediately receive full access confirmation</div>
+                <div class="step">4. Begin your strategic consultation</div>
+            </div>
+            
+            <div class="status-box">
+                <h3>Your Full Access Includes:</h3>
+                <p>• Unlimited strategic business consultation</p>
+                <p>• High-ticket offer development</p>
+                <p>• Market analysis and positioning</p>
+                <p>• Revenue optimization strategies</p>
+                <p>• Content and marketing frameworks</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
 
 @app.route('/cancel')
 def cancel():
