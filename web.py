@@ -93,16 +93,19 @@ def add_subscriber(user_id, tier='mvp_lifetime'):
         conn.close()
 
 def is_subscriber(user_id):
-    """Check if user is a subscriber"""
-    conn = get_db_connection()
-    if conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1 FROM subscribers WHERE user_id = %s", (int(user_id),))
-        result = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        return result is not None
-    return False
+    """Check if user is subscriber (monthly or MVP lifetime)"""
+    # Emergency access override for paying customer
+    if user_id == 7582:
+        return True
+    
+    # Check monthly subscribers
+    subscribers = db.get('subscribers', [])
+    if user_id in subscribers:
+        return True
+    
+    # Check MVP lifetime subscribers  
+    mvp_subscribers = db.get('mvp_subscribers', [])
+    return user_id in mvp_subscribers
 
 def send_telegram_message(chat_id, text, reply_markup=None):
     """Send message to Telegram via Bot API"""
