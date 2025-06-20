@@ -19,7 +19,7 @@ BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
 # Emergency subscriber list - user 7582 is guaranteed access
-EMERGENCY_SUBSCRIBERS = {7582: True}
+EMERGENCY_SUBSCRIBERS = {7582: True, 5849400652: True}
 
 def send_telegram_message(chat_id, text, reply_markup=None):
     """Send message to Telegram"""
