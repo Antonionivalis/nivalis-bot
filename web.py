@@ -80,52 +80,230 @@ def get_emergency_ai_response(message, user_id):
 
 @app.route('/')
 def index():
-    """Landing page - emergency static version"""
-    return '''<!DOCTYPE html>
-<html>
+    """Landing page - original professional version"""
+    html = """<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Nivalis - Elite Business Strategy AI</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivalis AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-            background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
-            color: white; margin: 0; padding: 20px; min-height: 100vh;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container { max-width: 600px; margin: 0 auto; text-align: center; padding-top: 50px; }
-        h1 { font-size: 3em; margin-bottom: 20px; background: linear-gradient(45deg, #00d4ff, #ff6b35); 
-             -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .btn { 
-            background: linear-gradient(45deg, #00d4ff, #ff6b35); 
-            color: white; padding: 15px 30px; border: none; border-radius: 25px;
-            font-size: 18px; cursor: pointer; text-decoration: none; display: inline-block; margin: 10px;
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a1628;
+            color: white;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
-        .features { text-align: left; margin: 40px 0; }
-        .feature { margin: 15px 0; }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-title {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+        
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px 0;
+        }
+        
+        .headline {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .subscription-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .subscription-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .features {
+            margin-bottom: 24px;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .feature svg {
+            color: #00d4ff;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .price-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .price {
+            font-size: 36px;
+            font-weight: 900;
+            color: #00d4ff;
+            margin-bottom: 4px;
+        }
+        
+        .price-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+        
+        .footer-quote {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+            
+            .headline {
+                font-size: 22px;
+            }
+            
+            .price {
+                font-size: 32px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>NIVALIS</h1>
-        <h2>Elite Business Strategy AI</h2>
-        <p>Transform your skills into a profitable business with Antonio's digital clone.</p>
-        
-        <div class="features">
-            <div class="feature">🎯 Strategic business planning and execution</div>
-            <div class="feature">💰 High-ticket offer development</div>
-            <div class="feature">📈 Market analysis and positioning</div>
-            <div class="feature">🚀 Revenue optimization strategies</div>
-        </div>
-        
-        <a href="/create-mvp-checkout-session" class="btn">Get Founder's Access - £97 (Lifetime)</a>
-        
-        <p style="margin-top: 40px; font-size: 14px; opacity: 0.7;">
-            "The secret to getting ahead is getting started." - Mark Twain
-        </p>
+        <header class="header">
+            <div class="logo">
+                <h1 class="gradient-title">NIVALIS</h1>
+            </div>
+        </header>
+
+        <main class="main">
+            <section class="hero">
+                <h2 class="headline">Built on 10 years of Experience and Results.<br>Trained for One Purpose: Execution.</h2>
+
+                <div class="subscription-card">
+                    <h3>Nivalis AI Access</h3>
+                    <div class="features">
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Transform any skill into high-ticket monthly offers</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Viral content scripts from top performing creators</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Complete marketing funnels that convert prospects into clients</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            <span>Strategic business planning and revenue optimization</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-section">
+                        <div class="price">£97</div>
+                        <div class="price-subtitle">Founder's Access • Lifetime</div>
+                    </div>
+                    
+                    <a href="/create-mvp-checkout-session" class="cta-button">Get Founder's Access</a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer-quote">
+            <p>"The secret to getting ahead is getting started." - Mark Twain</p>
+        </footer>
     </div>
 </body>
-</html>'''
+</html>"""
+    return html
 
 @app.route('/health')
 def health():
@@ -172,18 +350,21 @@ I'm Antonio's digital clone providing elite business strategy consultation. Your
 
 What's your most pressing business challenge right now?"""
                 
-                send_telegram_message(chat_id, welcome)
+                result = send_telegram_message(chat_id, welcome)
+                logger.info(f"Message sent to user 7582: {result}")
                 return jsonify({'ok': True})
             
             else:
                 # AI consultation for user 7582
                 try:
                     ai_response = get_emergency_ai_response(text, user_id)
-                    send_telegram_message(chat_id, ai_response)
+                    result = send_telegram_message(chat_id, ai_response)
+                    logger.info(f"AI response sent to user 7582: {result}")
                 except Exception as ai_error:
                     logger.error(f"AI error for 7582: {ai_error}")
                     fallback = "Your access is confirmed. I'm ready to help with strategic consultation. Could you rephrase your question?"
-                    send_telegram_message(chat_id, fallback)
+                    result = send_telegram_message(chat_id, fallback)
+                    logger.info(f"Fallback sent to user 7582: {result}")
                 
                 return jsonify({'ok': True})
         
@@ -243,31 +424,48 @@ What business challenge can I help you solve today?"""
         
         return jsonify({'ok': True})
 
-@app.route('/create-mvp-checkout-session', methods=['POST'])
+@app.route('/create-mvp-checkout-session', methods=['POST', 'GET'])
 def create_mvp_checkout():
-    """Emergency checkout"""
+    """Create Stripe checkout session for MVP access"""
     try:
+        stripe_key = os.environ.get('STRIPE_SECRET_KEY')
+        if not stripe_key:
+            logger.error("No Stripe secret key configured")
+            return "Payment system temporarily unavailable", 500
+        
+        # Use price_data instead of hardcoded price ID
         checkout_session = stripe.checkout.Session.create(
             line_items=[{
-                'price': 'price_1QKlH1DhGdG2vys0NhcVWvmJ',
+                'price_data': {
+                    'currency': 'gbp',
+                    'product_data': {
+                        'name': 'Nivalis Founder\'s Access',
+                        'description': 'Lifetime access to elite business strategy consultation',
+                    },
+                    'unit_amount': 9700,  # £97.00 in pence
+                },
                 'quantity': 1,
             }],
             mode='payment',
             success_url='https://web-production-8ff6.up.railway.app/success?session_id={CHECKOUT_SESSION_ID}',
             cancel_url='https://web-production-8ff6.up.railway.app/cancel',
-            metadata={'user_id': 'new_user', 'tier': 'mvp_lifetime'}
+            metadata={'user_id': 'new_user', 'tier': 'mvp_lifetime'},
+            automatic_tax={'enabled': False}
         )
+        
         if checkout_session.url:
             return redirect(checkout_session.url, code=303)
         else:
-            return "Payment session failed", 500
+            return "Payment session creation failed", 500
+            
     except Exception as e:
         logger.error(f"Checkout error: {e}")
-        return "Payment temporarily unavailable", 500
+        return f"Payment temporarily unavailable: {str(e)}", 500
 
 @app.route('/success')
 def success():
-    return '''<!DOCTYPE html>
+    """Payment success page"""
+    html = """<!DOCTYPE html>
 <html>
 <head>
     <title>Payment Successful - Nivalis</title>
@@ -275,13 +473,38 @@ def success():
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-            background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
-            color: white; margin: 0; padding: 20px; min-height: 100vh; text-align: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: #0a1628;
+            color: white; 
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh; 
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .container { max-width: 600px; margin: 0 auto; padding-top: 100px; }
-        h1 { color: #00d4ff; font-size: 2.5em; margin-bottom: 20px; }
-        .success-icon { font-size: 4em; margin-bottom: 20px; }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto;
+        }
+        .success-icon { 
+            font-size: 4em; 
+            margin-bottom: 20px; 
+        }
+        h1 { 
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5em; 
+            margin-bottom: 20px; 
+        }
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -289,14 +512,16 @@ def success():
         <div class="success-icon">✅</div>
         <h1>Payment Successful!</h1>
         <p>Your Founder's Access has been activated.</p>
-        <p>Return to the Telegram bot to begin your strategic consultation.</p>
+        <p>Return to the Telegram bot to begin your strategic consultation with Nivalis.</p>
     </div>
 </body>
-</html>'''
+</html>"""
+    return html
 
-@app.route('/cancel') 
+@app.route('/cancel')
 def cancel():
-    return '''<!DOCTYPE html>
+    """Payment cancelled page"""
+    html = """<!DOCTYPE html>
 <html>
 <head>
     <title>Payment Cancelled - Nivalis</title>
@@ -304,16 +529,37 @@ def cancel():
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-            background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
-            color: white; margin: 0; padding: 20px; min-height: 100vh; text-align: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: #0a1628;
+            color: white; 
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh; 
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .container { max-width: 600px; margin: 0 auto; padding-top: 100px; }
-        h1 { color: #ff6b35; font-size: 2.5em; margin-bottom: 20px; }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto;
+        }
+        h1 { 
+            color: #ff6b35; 
+            font-size: 2.5em; 
+            margin-bottom: 20px; 
+        }
         .btn { 
-            background: linear-gradient(45deg, #00d4ff, #ff6b35); 
-            color: white; padding: 15px 30px; border: none; border-radius: 25px;
-            font-size: 18px; cursor: pointer; text-decoration: none; display: inline-block; margin: 20px;
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b35 100%);
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 25px;
+            font-size: 18px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block; 
+            margin: 20px;
         }
     </style>
 </head>
@@ -324,7 +570,8 @@ def cancel():
         <a href="/" class="btn">Return Home</a>
     </div>
 </body>
-</html>'''
+</html>"""
+    return html
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
