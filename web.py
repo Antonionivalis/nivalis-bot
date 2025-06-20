@@ -80,8 +80,52 @@ def get_emergency_ai_response(message, user_id):
 
 @app.route('/')
 def index():
-    """Landing page"""
-    return render_template('index.html')
+    """Landing page - emergency static version"""
+    return '''<!DOCTYPE html>
+<html>
+<head>
+    <title>Nivalis - Elite Business Strategy AI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
+            color: white; margin: 0; padding: 20px; min-height: 100vh;
+        }
+        .container { max-width: 600px; margin: 0 auto; text-align: center; padding-top: 50px; }
+        h1 { font-size: 3em; margin-bottom: 20px; background: linear-gradient(45deg, #00d4ff, #ff6b35); 
+             -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn { 
+            background: linear-gradient(45deg, #00d4ff, #ff6b35); 
+            color: white; padding: 15px 30px; border: none; border-radius: 25px;
+            font-size: 18px; cursor: pointer; text-decoration: none; display: inline-block; margin: 10px;
+        }
+        .features { text-align: left; margin: 40px 0; }
+        .feature { margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NIVALIS</h1>
+        <h2>Elite Business Strategy AI</h2>
+        <p>Transform your skills into a profitable business with Antonio's digital clone.</p>
+        
+        <div class="features">
+            <div class="feature">🎯 Strategic business planning and execution</div>
+            <div class="feature">💰 High-ticket offer development</div>
+            <div class="feature">📈 Market analysis and positioning</div>
+            <div class="feature">🚀 Revenue optimization strategies</div>
+        </div>
+        
+        <a href="/create-mvp-checkout-session" class="btn">Get Founder's Access - £97 (Lifetime)</a>
+        
+        <p style="margin-top: 40px; font-size: 14px; opacity: 0.7;">
+            "The secret to getting ahead is getting started." - Mark Twain
+        </p>
+    </div>
+</body>
+</html>'''
 
 @app.route('/health')
 def health():
@@ -213,18 +257,74 @@ def create_mvp_checkout():
             cancel_url='https://web-production-8ff6.up.railway.app/cancel',
             metadata={'user_id': 'new_user', 'tier': 'mvp_lifetime'}
         )
-        return redirect(checkout_session.url, code=303)
+        if checkout_session.url:
+            return redirect(checkout_session.url, code=303)
+        else:
+            return "Payment session failed", 500
     except Exception as e:
         logger.error(f"Checkout error: {e}")
         return "Payment temporarily unavailable", 500
 
 @app.route('/success')
 def success():
-    return render_template('success.html')
+    return '''<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Successful - Nivalis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
+            color: white; margin: 0; padding: 20px; min-height: 100vh; text-align: center;
+        }
+        .container { max-width: 600px; margin: 0 auto; padding-top: 100px; }
+        h1 { color: #00d4ff; font-size: 2.5em; margin-bottom: 20px; }
+        .success-icon { font-size: 4em; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>Payment Successful!</h1>
+        <p>Your Founder's Access has been activated.</p>
+        <p>Return to the Telegram bot to begin your strategic consultation.</p>
+    </div>
+</body>
+</html>'''
 
 @app.route('/cancel') 
 def cancel():
-    return render_template('cancel.html')
+    return '''<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Cancelled - Nivalis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
+            color: white; margin: 0; padding: 20px; min-height: 100vh; text-align: center;
+        }
+        .container { max-width: 600px; margin: 0 auto; padding-top: 100px; }
+        h1 { color: #ff6b35; font-size: 2.5em; margin-bottom: 20px; }
+        .btn { 
+            background: linear-gradient(45deg, #00d4ff, #ff6b35); 
+            color: white; padding: 15px 30px; border: none; border-radius: 25px;
+            font-size: 18px; cursor: pointer; text-decoration: none; display: inline-block; margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Payment Cancelled</h1>
+        <p>No worries! You can try again whenever you're ready.</p>
+        <a href="/" class="btn">Return Home</a>
+    </div>
+</body>
+</html>'''
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
